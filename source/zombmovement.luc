@@ -1,0 +1,377 @@
+module zombmovement (
+    input clk,  // clock
+     input rst, // reset
+    input signal,
+    input start_button,
+    input reset_btn,
+    input grid_led[25],
+    input button[8],    
+    output z_led[25],
+    input level_two_button
+  ) {
+
+
+  .clk(clk){
+  
+   
+  fsm state = {DEFAULT, START, UP, DOWN, LEFT, RIGHT};
+  dff input_z[32];
+ 
+  
+  dff zomb1map[25];}
+  alu alu;
+  zmovement zmovement(.clk(clk), .rst(rst));
+  zomb2movement zomb2movement(.clk(clk), .rst(rst));
+  always {
+  z_led=8h00;
+    zomb2movement.reset_btn = reset_btn;
+    zomb2movement.level_two_button = level_two_button;
+    zomb2movement.button = button;
+    zomb2movement.grid_led = grid_led;
+    zomb2movement.signal = signal;
+    zmovement.z1init = zomb1map.q;
+    zomb1map.d = zmovement.z1move;
+    
+    alu.a = 8b1;
+    alu.b = 0;
+    alu.alufn = 8b0;
+    case(state.q){
+      state.DEFAULT:
+      if(start_button){
+        zomb1map.d=25b0000000000000000000010000;
+          state.d=state.START;}
+          if(level_two_button){
+        zomb1map.d=25b0000000000000000000010000;
+          state.d=state.START;}
+          
+      state.START:
+        input_z.d=zomb1map.q;
+        
+        if(reset_btn){
+        //MUST INITIATE AT 0 SO RESET BUTTON WORKS
+        zomb1map.d=25b0;
+          zmovement.z1init=zomb1map.q;
+        state.d=state.DEFAULT;}
+        
+        
+        if(signal){
+        
+   
+          if ((input_z.q[4:0]!=5b0)&&((grid_led[24:20]!=5b0)||(grid_led[19:15]!=5b0)||(grid_led[14:10]!=5b0)||(grid_led[9:5]!=5b0))){
+        state.d=state.UP;}
+          
+        if ((input_z.q[9:5]!=5b0)&&((grid_led[24:20]!=5b0)||(grid_led[19:15]!=5b0)||(grid_led[14:10]!=5b0))){
+        state.d=state.UP;}
+          
+        if ((input_z.q[14:10]!=5b0)&&((grid_led[24:20]!=5b0)||(grid_led[19:15]!=5b0))){
+        state.d=state.UP;}
+          
+        if ((input_z.q[19:15]!=5b0)&&((grid_led[24:20]!=5b0))){
+        state.d=state.UP;}
+          
+        //DOWN
+        if ((input_z.q[24:20]!=5b0)&&((grid_led[4:0]!=5b0)||(grid_led[19:15]!=5b0)||(grid_led[14:10]!=5b0)||(grid_led[9:5]!=5b0))){
+        state.d=state.DOWN;}
+          
+        if ((input_z.q[19:15]!=5b0)&&((grid_led[4:0]!=5b0)||(grid_led[14:10]!=5b0)||(grid_led[9:5]!=5b0))){
+        state.d=state.DOWN;}
+          
+        if ((input_z.q[14:10]!=5b0)&&((grid_led[4:0]!=5b0)||(grid_led[9:5]!=5b0))){
+        state.d=state.DOWN;}
+          
+        if ((input_z.q[9:5]!=5b0)&&((grid_led[4:0]!=5b0))){
+        state.d=state.DOWN;} 
+          
+        //LEFT1
+        if (((input_z.q[0]!=5b0))&&((grid_led[4:1]!=5b0))){
+        state.d=state.LEFT;}
+          
+        if (((input_z.q[5]!=5b0))&&((grid_led[9:6]!=5b0))){
+        state.d=state.LEFT;}
+          
+        if (((input_z.q[10]!=5b0))&&((grid_led[14:11]!=5b0))){
+        state.d=state.LEFT;}
+          
+        if (((input_z.q[15]!=5b0))&&((grid_led[19:16]!=5b0))){
+        state.d=state.LEFT;}
+          
+        if (((input_z.q[20]!=5b0))&&((grid_led[24:21]!=5b0))){
+        state.d=state.LEFT;}
+        //LEFT2
+        if (((input_z.q[1]!=5b0))&&((grid_led[4:2]!=5b0))){
+        state.d=state.LEFT;}
+          
+        if (((input_z.q[6]!=5b0))&&((grid_led[9:7]!=5b0))){
+        state.d=state.LEFT;}
+          
+        if (((input_z.q[11]!=5b0))&&((grid_led[14:12]!=5b0))){
+        state.d=state.LEFT;}
+          
+        if (((input_z.q[16]!=5b0))&&((grid_led[19:17]!=5b0))){
+        state.d=state.LEFT;}
+          
+        if (((input_z.q[21]!=5b0))&&((grid_led[24:22]!=5b0))){
+        state.d=state.LEFT;}
+        //LEFT3
+        if (((input_z.q[2]!=5b0))&&((grid_led[4:3]!=5b0))){
+        state.d=state.LEFT;}
+          
+        if (((input_z.q[7]!=5b0))&&((grid_led[9:7]!=5b0))){
+        state.d=state.LEFT;}
+          
+        if (((input_z.q[12]!=5b0))&&((grid_led[14:13]!=5b0))){
+        state.d=state.LEFT;}
+          
+        if (((input_z.q[17]!=5b0))&&((grid_led[19:18]!=5b0))){
+        state.d=state.LEFT;}
+          
+        if (((input_z.q[22]!=5b0))&&((grid_led[24:23]!=5b0))){
+        state.d=state.LEFT;}
+        //LEFT4
+        if (((input_z.q[3]!=5b0))&&((grid_led[4]!=5b0))){
+        state.d=state.LEFT;}
+          
+        if (((input_z.q[8]!=5b0))&&((grid_led[9]!=5b0))){
+        state.d=state.LEFT;}
+          
+        if (((input_z.q[13]!=5b0))&&((grid_led[14]!=5b0))){
+        state.d=state.LEFT;}
+          
+        if (((input_z.q[18]!=5b0))&&((grid_led[19]!=5b0))){
+        state.d=state.LEFT;}
+          
+        if (((input_z.q[23]!=5b0))&&((grid_led[24]!=5b0))){
+        state.d=state.LEFT;} 
+          
+        if (((input_z.q[24]!=5b0))&&((grid_led[23:20]!=5b0))){
+        state.d=state.RIGHT;}
+          
+        if (((input_z.q[19]!=5b0))&&((grid_led[18:15]!=5b0))){
+        state.d=state.RIGHT;}
+          
+        if (((input_z.q[14]!=5b0))&&((grid_led[13:10]!=5b0))){
+        state.d=state.RIGHT;}
+          
+        if (((input_z.q[9]!=5b0))&&((grid_led[8:5]!=5b0))){
+        state.d=state.RIGHT;}
+          
+        if (((input_z.q[4]!=5b0))&&((grid_led[3:0]!=5b0))){
+        state.d=state.RIGHT;}
+                      
+        //RIGHT2
+        if (((input_z.q[23]!=5b0))&&((grid_led[22:20]!=5b0))){
+        state.d=state.RIGHT;}
+          
+        if (((input_z.q[18]!=5b0))&&((grid_led[17:15]!=5b0))){
+        state.d=state.RIGHT;}
+          
+        if (((input_z.q[13]!=5b0))&&((grid_led[12:10]!=5b0))){
+        state.d=state.RIGHT;}
+          
+        if (((input_z.q[8]!=5b0))&&((grid_led[7:5]!=5b0))){
+        state.d=state.RIGHT;}
+          
+        if (((input_z.q[3]!=5b0))&&((grid_led[2:0]!=5b0))){
+        state.d=state.RIGHT;}
+        //RIGHT3
+        if (((input_z.q[22]!=5b0))&&((grid_led[21:20]!=5b0))){
+        state.d=state.RIGHT;}
+          
+        if (((input_z.q[17]!=5b0))&&((grid_led[16:15]!=5b0))){
+        state.d=state.RIGHT;}
+          
+        if (((input_z.q[12]!=5b0))&&((grid_led[11:10]!=5b0))){
+        state.d=state.RIGHT;}
+          
+        if (((input_z.q[7]!=5b0))&&((grid_led[6:5]!=5b0))){
+        state.d=state.RIGHT;}
+          
+        if (((input_z.q[2]!=5b0))&&((grid_led[1:0]!=5b0))){
+        state.d=state.RIGHT;}
+        //RIGHT4
+        if (((input_z.q[21]!=5b0))&&((grid_led[20]!=5b0))){
+        state.d=state.RIGHT;}
+          
+        if (((input_z.q[16]!=5b0))&&((grid_led[15]!=5b0))){
+        state.d=state.RIGHT;}
+          
+        if (((input_z.q[11]!=5b0))&&((grid_led[10]!=5b0))){
+        state.d=state.RIGHT;}
+          
+        if (((input_z.q[6]!=5b0))&&((grid_led[5]!=5b0))){
+        state.d=state.RIGHT;}
+          
+        if (((input_z.q[1]!=5b0))&&((grid_led[0]!=5b0))){
+        state.d=state.RIGHT;}}
+          
+  
+          
+    
+    
+    state.UP:
+          alu.a = input_z.q;
+          alu.b = 8d5;
+          alu.alufn= 8b00100000;
+          zomb1map.d=alu.out;
+          zmovement.z1init=zomb1map.q;
+     
+      if(!button){
+          state.d=state.START;
+          }
+        
+    state.DOWN:
+      alu.a = input_z.q;
+          alu.b = 8d5;
+          alu.alufn= 8b00100001;
+          zomb1map.d=alu.out;
+          zmovement.z1init=zomb1map.q;
+     if(!button){
+          state.d=state.START;}
+        
+      state.LEFT:
+        alu.a = input_z.q;
+          alu.b = 8d1;
+          alu.alufn= 8b00100000;
+          zomb1map.d=alu.out;
+          zmovement.z1init=zomb1map.q;
+    if(!button){
+          state.d=state.START;}
+      state.RIGHT:
+      alu.a = input_z.q;
+          alu.b = 8d1;
+          alu.alufn= 8b00100001;
+          zomb1map.d=alu.out;
+          zmovement.z1init=zomb1map.q;
+   if(!button){
+          state.d=state.START;}
+        
+    }
+        
+         
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    
+        //zom1map  
+        
+        
+     if(zomb1map.q[0]==1){
+    z_led[0]=1;}   
+       if(zomb1map.q[1]==1){
+    z_led[1]=1;}  
+       if(zomb1map.q[2]==1){
+    z_led[2]=1;} 
+       if(zomb1map.q[3]==1){
+    z_led[3]=1;} 
+       if(zomb1map.q[4]==1){
+    z_led[4]=1;} 
+       if(zomb1map.q[5]==1){
+    z_led[5]=1;} 
+       if(zomb1map.q[6]==1){
+    z_led[6]=1;} 
+       if(zomb1map.q[7]==1){
+    z_led[7]=1;} 
+       if(zomb1map.q[8]==1){
+    z_led[8]=1;} 
+       if(zomb1map.q[9]==1){
+    z_led[9]=1;} 
+       if(zomb1map.q[10]==1){
+    z_led[10]=1;} 
+       if(zomb1map.q[11]==1){
+    z_led[11]=1;} 
+       if(zomb1map.q[12]==1){
+    z_led[12]=1;} 
+       if(zomb1map.q[13]==1){
+    z_led[13]=1;} 
+       if(zomb1map.q[14]==1){
+    z_led[14]=1;} 
+       if(zomb1map.q[15]==1){
+    z_led[15]=1;}  
+       if(zomb1map.q[16]==1){
+    z_led[16]=1;} 
+       if(zomb1map.q[17]==1){
+    z_led[17]=1;} 
+       if(zomb1map.q[18]==1){
+    z_led[18]=1;} 
+       if(zomb1map.q[19]==1){
+    z_led[19]=1;} 
+       if(zomb1map.q[20]==1){
+    z_led[20]=1;} 
+       if(zomb1map.q[21]==1){
+    z_led[21]=1;} 
+       if(zomb1map.q[22]==1){
+    z_led[22]=1;} 
+       if(zomb1map.q[23]==1){
+    z_led[23]=1;} 
+       if(zomb1map.q[24]==1){
+    z_led[24]=1;} 
+    
+      //zomb2map  
+    
+      if(zomb2movement.z_map[0]==1){
+    z_led[0]=1;}   
+       if(zomb2movement.z_map[1]==1){
+    z_led[1]=1;}  
+       if(zomb2movement.z_map[2]==1){
+    z_led[2]=1;} 
+       if(zomb2movement.z_map[3]==1){
+    z_led[3]=1;} 
+       if(zomb2movement.z_map[4]==1){
+    z_led[4]=1;} 
+       if(zomb2movement.z_map[5]==1){
+    z_led[5]=1;} 
+       if(zomb2movement.z_map[6]==1){
+    z_led[6]=1;} 
+       if(zomb2movement.z_map[7]==1){
+    z_led[7]=1;} 
+       if(zomb2movement.z_map[8]==1){
+    z_led[8]=1;} 
+       if(zomb2movement.z_map[9]==1){
+    z_led[9]=1;} 
+       if(zomb2movement.z_map[10]==1){
+    z_led[10]=1;} 
+       if(zomb2movement.z_map[11]==1){
+    z_led[11]=1;} 
+       if(zomb2movement.z_map[12]==1){
+    z_led[12]=1;} 
+       if(zomb2movement.z_map[13]==1){
+    z_led[13]=1;} 
+       if(zomb2movement.z_map[14]==1){
+    z_led[14]=1;} 
+       if(zomb2movement.z_map[15]==1){
+    z_led[15]=1;}  
+       if(zomb2movement.z_map[16]==1){
+    z_led[16]=1;} 
+       if(zomb2movement.z_map[17]==1){
+    z_led[17]=1;} 
+       if(zomb2movement.z_map[18]==1){
+    z_led[18]=1;} 
+       if(zomb2movement.z_map[19]==1){
+    z_led[19]=1;} 
+       if(zomb2movement.z_map[20]==1){
+    z_led[20]=1;} 
+       if(zomb2movement.z_map[21]==1){
+    z_led[21]=1;} 
+       if(zomb2movement.z_map[22]==1){
+    z_led[22]=1;} 
+       if(zomb2movement.z_map[23]==1){
+    z_led[23]=1;} 
+       if(zomb2movement.z_map[24]==1){
+    z_led[24]=1;} 
+        
+
+  }
+  
+  
+  
+}
+  
+  
+

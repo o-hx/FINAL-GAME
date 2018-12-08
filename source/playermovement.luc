@@ -1,0 +1,631 @@
+module playermovement (
+    input clk,              // 50MHz clock        
+    input button[8],
+    input z_led[25],
+    input start_button,
+    output grid_led[25],
+    input level_two_button,
+    input reset_button
+    
+  ) {
+  
+  sig rst;
+  
+    .clk(clk) {
+  fsm state = {DEFAULT, SAVE_A,  COMPUTE_LEFT_P1, COMPUTE_RIGHT_P1, COMPUTE_UP_P1, COMPUTE_DOWN_P1,COMPUTE_LEFT_P2, COMPUTE_RIGHT_P2, COMPUTE_UP_P2, COMPUTE_DOWN_P2 ,KILL_P1, KILL_P2};
+    // The reset conditioner is used to synchronize the reset signal to the FPGA
+    // clock. This ensures the entire FPGA comes out of reset at the same time.
+    //reset_conditioner reset_cond;
+    dff input_a[32]; //store instance of alu.a p1
+    dff input_b[32]; //store instance of alu.a p2
+
+    
+    }
+    dff p1map[25](.clk(clk), .rst(rst));
+    dff p2map[25](.clk(clk), .rst(rst));
+    alu alu;
+    movement movement(.clk(clk), .rst(rst));
+
+  always {
+    grid_led[24:0] = 8h00;
+    
+    alu.a=8b1;
+      alu.b=0;
+      alu.alufn=8b00000000;
+    movement.init=p1map.q;
+    movement.init2 = p2map.q;
+    p1map.d = movement.p1move;
+    p2map.d = movement.p2move;
+    
+    
+    
+     case(state.q) { //FSM
+         
+      state.DEFAULT:
+      if(start_button){
+      p1map.d = 25b1;
+      p2map.d = 25b1000000000000000000000000;
+      
+        state.d = state.SAVE_A;}
+       if(level_two_button){
+      p1map.d = 25b1;
+      p2map.d = 25b1000000000000000000000000;
+      
+        state.d = state.SAVE_A;}   
+        state.SAVE_A: //input and store A
+          input_a.d = p1map.q;
+          input_b.d = p2map.q;
+        
+        if (reset_button){
+        p1map.d=25b0;
+          movement.init=p1map.q;
+          p2map.d=25b0;
+          movement.init2=p2map.q;
+        
+        state.d = state.DEFAULT;}
+        
+          //KILL PLAYERS USING COMPARATOR ALU
+      if (z_led[0]==1 && p1map.q[0]==1){
+        
+              state.d=state.KILL_P1;}
+            
+          //KILL P2
+         
+          if(z_led[0]==1 && p2map.q[0]==1){
+              state.d=state.KILL_P2;}
+          
+          //KILLP1
+   if (z_led[1]==1 && p1map.q[1]==1){
+        
+              state.d=state.KILL_P1;}
+            
+          //KILL P2
+         
+          if(z_led[1]==1 && p2map.q[1]==1){
+              state.d=state.KILL_P2;}
+          
+          //KILLP1
+   if (z_led[2]==1 && p1map.q[2]==1){
+        
+              state.d=state.KILL_P1;}
+            
+          //KILL P2
+         
+          if(z_led[2]==1 && p2map.q[2]==1){
+              state.d=state.KILL_P2;}
+          
+          //KILLP1
+   if (z_led[3]==1 && p1map.q[3]==1){
+        
+              state.d=state.KILL_P1;}
+            
+          //KILL P2
+         
+          if(z_led[3]==1 && p2map.q[3]==1){
+              state.d=state.KILL_P2;}
+          
+          //KILLP1
+   if (z_led[4]==1 && p1map.q[4]==1){
+        
+              state.d=state.KILL_P1;}
+            
+          //KILL P2
+         
+          if(z_led[4]==1 && p2map.q[4]==1){
+              state.d=state.KILL_P2;}
+          
+          //KILLP1
+   if (z_led[5]==1 && p1map.q[5]==1){
+        
+              state.d=state.KILL_P1;}
+            
+          //KILL P2
+         
+          if(z_led[5]==1 && p2map.q[5]==1){
+              state.d=state.KILL_P2;}
+          
+          //KILLP1
+   if (z_led[6]==1 && p1map.q[6]==1){
+        
+              state.d=state.KILL_P1;}
+            
+          //KILL P2
+         
+          if(z_led[6]==1 && p2map.q[6]==1){
+              state.d=state.KILL_P2;}
+          
+          //KILLP1
+   if (z_led[7]==1 && p1map.q[7]==1){
+        
+              state.d=state.KILL_P1;}
+            
+          //KILL P2
+         
+          if(z_led[7]==1 && p2map.q[7]==1){
+              state.d=state.KILL_P2;}
+          
+          //KILLP1
+   if (z_led[8]==1 && p1map.q[8]==1){
+        
+              state.d=state.KILL_P1;}
+            
+          //KILL P2
+         
+          if(z_led[8]==1 && p2map.q[8]==1){
+              state.d=state.KILL_P2;}
+          
+          //KILLP1
+   if (z_led[9]==1 && p1map.q[9]==1){
+        
+              state.d=state.KILL_P1;}
+            
+          //KILL P2
+         
+          if(z_led[9]==1 && p2map.q[9]==1){
+              state.d=state.KILL_P2;}
+          
+          //KILLP1
+   if (z_led[10]==1 && p1map.q[10]==1){
+        
+              state.d=state.KILL_P1;}
+            
+          //KILL P2
+         
+          if(z_led[10]==1 && p2map.q[10]==1){
+              state.d=state.KILL_P2;}
+         
+          
+          //KILLP1
+   if (z_led[11]==1 && p1map.q[11]==1){
+        
+              state.d=state.KILL_P1;}
+            
+          //KILL P2
+         
+          if(z_led[11]==1 && p2map.q[11]==1){
+              state.d=state.KILL_P2;}
+          
+          //KILLP1
+   if (z_led[12]==1 && p1map.q[12]==1){
+        
+              state.d=state.KILL_P1;}
+            
+          //KILL P2
+         
+          if(z_led[12]==1 && p2map.q[12]==1){
+              state.d=state.KILL_P2;}
+          
+          //KILLP1
+   if (z_led[13]==1 && p1map.q[13]==1){
+        
+              state.d=state.KILL_P1;}
+            
+          //KILL P2
+         
+          if(z_led[13]==1 && p2map.q[13]==1){
+              state.d=state.KILL_P2;}
+          
+          //KILLP1
+   if (z_led[14]==1 && p1map.q[14]==1){
+        
+              state.d=state.KILL_P1;}
+            
+          //KILL P2
+         
+          if(z_led[14]==1 && p2map.q[14]==1){
+              state.d=state.KILL_P2;}
+          
+          //KILLP1
+   if (z_led[15]==1 && p1map.q[15]==1){
+        
+              state.d=state.KILL_P1;}
+            
+          //KILL P2
+         
+          if(z_led[15]==1 && p2map.q[15]==1){
+              state.d=state.KILL_P2;}
+          
+          //KILLP1
+   if (z_led[16]==1 && p1map.q[16]==1){
+        
+              state.d=state.KILL_P1;}
+            
+          //KILL P2
+         
+          if(z_led[16]==1 && p2map.q[16]==1){
+              state.d=state.KILL_P2;}
+          
+          //KILLP1
+   if (z_led[17]==1 && p1map.q[17]==1){
+        
+              state.d=state.KILL_P1;}
+            
+          //KILL P2
+         
+          if(z_led[17]==1 && p2map.q[17]==1){
+              state.d=state.KILL_P2;}
+          
+          //KILLP1
+   if (z_led[18]==1 && p1map.q[18]==1){
+        
+              state.d=state.KILL_P1;}
+            
+          //KILL P2
+         
+          if(z_led[18]==1 && p2map.q[18]==1){
+              state.d=state.KILL_P2;}
+          
+          //KILLP1
+   if (z_led[19]==1 && p1map.q[19]==1){
+        
+              state.d=state.KILL_P1;}
+            
+          //KILL P2
+         
+          if(z_led[19]==1 && p2map.q[19]==1){
+              state.d=state.KILL_P2;}
+          
+          //KILL P1
+        if (z_led[20]==1 && p1map.q[20]==1){
+        
+              state.d=state.KILL_P1;}
+            
+          //KILL P2
+         
+          if(z_led[20]==1 && p2map.q[20]==1){
+              state.d=state.KILL_P2;}
+          
+          //KILLP1
+   if (z_led[21]==1 && p1map.q[21]==1){
+        
+              state.d=state.KILL_P1;}
+            
+          //KILL P2
+         
+          if(z_led[21]==1 && p2map.q[21]==1){
+              state.d=state.KILL_P2;}
+          
+          //KILLP1
+   if (z_led[22]==1 && p1map.q[22]==1){
+        
+              state.d=state.KILL_P1;}
+            
+          //KILL P2
+         
+          if(z_led[22]==1 && p2map.q[22]==1){
+              state.d=state.KILL_P2;}
+          
+          //KILLP1
+   if (z_led[23]==1 && p1map.q[23]==1){
+        
+              state.d=state.KILL_P1;}
+            
+          //KILL P2
+         
+          if(z_led[23]==1 && p2map.q[23]==1){
+              state.d=state.KILL_P2;}
+          
+          //KILLP1
+   if (z_led[24]==1 && p1map.q[24]==1){
+        
+              state.d=state.KILL_P1;}
+            
+          //KILL P2
+         
+          if(z_led[24]==1 && p2map.q[24]==1){
+              state.d=state.KILL_P2;}  
+        
+        
+          if(button[0]){ //when up button press AND NOT ON TOP ROW
+            if( (p1map.q != 25b1000000000000000000000000) && (p1map.q != 25b0100000000000000000000000) && (p1map.q != 25b0010000000000000000000000) && (p1map.q != 25b0001000000000000000000000) && (p1map.q != 25b0000100000000000000000000) && (p2map.q != (p1map.q<<5))){
+              state.d = state.COMPUTE_UP_P1;}
+          }
+          if(button[1]){ //when left button is pressed AND NOT ON LEFTMOST ROW
+            if( (p1map.q != 25b1000000000000000000000000) && (p1map.q != 25b0000010000000000000000000) && (p1map.q != 25b0000000000100000000000000) && (p1map.q != 25b0000000000000001000000000) && (p1map.q != 25b0000000000000000000010000) && (p2map.q != (p1map.q<<1))){
+              state.d = state.COMPUTE_LEFT_P1;}
+          }
+          if(button[2]){ //when right button is pressed AND NOT ON RIGHTMOST ROW
+            if( (p1map.q != 25b0000100000000000000000000) && (p1map.q != 25b0000000001000000000000000) && (p1map.q != 25b0000000000000010000000000) && (p1map.q != 25b0000000000000000000100000) && (p1map.q != 25b0000000000000000000000001) && (p2map.q != (p1map.q>>1))){
+              state.d = state.COMPUTE_RIGHT_P1;}
+          }
+          if(button[3]){ //when down button is pressed AND NOT ON LOWEST ROW
+            if( (p1map.q != 25b0000000000000000000010000) && (p1map.q != 25b0000000000000000000001000) && (p1map.q != 25b0000000000000000000000100) && (p1map.q != 25b0000000000000000000000010) && (p1map.q != 25b0000000000000000000000001) && (p2map.q != (p1map.q>>5))){
+              state.d = state.COMPUTE_DOWN_P1;}
+          }
+          ////BUTTON 2
+          if(button[4]){ //when up button press AND NOT ON TOP ROW
+            if( (p2map.q != 25b1000000000000000000000000) && (p2map.q != 25b0100000000000000000000000) && (p2map.q != 25b0010000000000000000000000) && (p1map.q != 25b0001000000000000000000000) && (p2map.q != 25b0000100000000000000000000) && (p1map.q != (p2map.q<<5))){
+              state.d = state.COMPUTE_UP_P2;}
+          }
+          if(button[5]){ //when left button is pressed AND NOT ON LEFTMOST ROW
+            if( (p2map.q != 25b1000000000000000000000000) && (p2map.q != 25b0000010000000000000000000) && (p2map.q != 25b0000000000100000000000000) && (p2map.q != 25b0000000000000001000000000) && (p2map.q != 25b0000000000000000000010000) && (p1map.q != (p2map.q<<1))){
+              state.d = state.COMPUTE_LEFT_P2;}
+          }
+          if(button[6]){ //when right button is pressed AND NOT ON RIGHTMOST ROW
+            if( (p2map.q != 25b0000100000000000000000000) && (p2map.q != 25b0000000001000000000000000) && (p2map.q != 25b0000000000000010000000000) && (p2map.q != 25b0000000000000000000100000) && (p2map.q != 25b0000000000000000000000001) && (p1map.q != (p2map.q>>1))){
+              state.d = state.COMPUTE_RIGHT_P2;}
+          }
+          if(button[7]){ //when down button is pressed AND NOT ON LOWEST ROW
+            if( (p2map.q != 25b0000000000000000000010000) && (p2map.q != 25b0000000000000000000001000) && (p2map.q != 25b0000000000000000000000100) && (p2map.q != 25b0000000000000000000000010) && (p2map.q != 25b0000000000000000000000001) && (p1map.q != (p2map.q>>5))){
+              state.d = state.COMPUTE_DOWN_P2;}
+          }
+         //KILLP1 WITH MULTIPLY ALU
+      state.KILL_P1:
+      alu.a=input_a.q;
+        alu.b=8d0;
+      alu.alufn=8b00000010;
+        p1map.d=alu.out;
+      movement.init=p1map.q;
+        state.d=state.SAVE_A;
+        //KILLP2 with MULTIPLY ALU
+      state.KILL_P2:
+      alu.a=input_b.q;
+        alu.b=8d0;
+      alu.alufn=8b00000010;
+        p2map.d=alu.out;
+      movement.init2=p2map.q;
+        state.d=state.SAVE_A;
+        state.COMPUTE_LEFT_P1: //compute output
+           //after centre button is pressed
+          alu.a = input_a.q;
+          alu.b = 8d1;
+          alu.alufn= 8b00100000;
+          p1map.d=alu.out;
+          movement.init=p1map.q;
+        if(!button[1]){ //when left button is pressed
+            
+          state.d = state.SAVE_A;
+          }
+        
+        state.COMPUTE_RIGHT_P1: //compute output
+           //after centre button is pressed
+          alu.a = input_a.q;
+          alu.b = 8d1;
+          alu.alufn= 8b00100001;
+          p1map.d=alu.out;
+          movement.init=p1map.q;
+          
+        if(!button[2]){ //when right button is pressed
+            
+          state.d = state.SAVE_A;
+          }
+        
+        state.COMPUTE_UP_P1: //compute output
+           //after centre button is pressed
+          alu.a = input_a.q;
+          alu.b = 8d5;
+          alu.alufn= 8b00100000;
+          p1map.d=alu.out;
+          movement.init=p1map.q;
+        
+        if(!button[0]){ //when up button is pressed
+            
+          state.d = state.SAVE_A;
+          }
+        
+        state.COMPUTE_DOWN_P1: //compute output
+           //after centre button is pressed
+          alu.a = input_a.q;
+          alu.b = 8d5;
+          alu.alufn= 8b00100001;
+          p1map.d=alu.out;
+          movement.init=p1map.q;
+        
+        if(!button[3]){ //when down button is pressed
+            
+          state.d = state.SAVE_A;
+          }
+       //////////////////
+         state.COMPUTE_LEFT_P2: //compute output
+           //after centre button is pressed
+          alu.a = input_b.q;
+          alu.b = 8d1;
+          alu.alufn= 8b00100000;
+          p2map.d=alu.out;
+          movement.init2=p2map.q;
+        if(!button[5]){ //when left button is pressed
+            
+          state.d = state.SAVE_A;
+          }
+        
+        state.COMPUTE_RIGHT_P2: //compute output
+           //after centre button is pressed
+          alu.a = input_b.q;
+          alu.b = 8d1;
+          alu.alufn= 8b00100001;
+          p2map.d=alu.out;
+          movement.init2=p2map.q;
+        
+        if(!button[6]){ //when right button is pressed
+            
+          state.d = state.SAVE_A;
+          }
+        
+        state.COMPUTE_UP_P2: //compute output
+           //after centre button is pressed
+          alu.a = input_b.q;
+          alu.b = 8d5;
+          alu.alufn= 8b00100000;
+          p2map.d=alu.out;
+          movement.init2=p2map.q;
+        
+        if(!button[4]){ //when up button is pressed
+            
+          state.d = state.SAVE_A;
+          }
+        
+        state.COMPUTE_DOWN_P2: //compute output
+           //after centre button is pressed
+          alu.a = input_b.q;
+          alu.b = 8d5;
+          alu.alufn= 8b00100001;
+          p2map.d=alu.out;
+          movement.init2=p2map.q;
+        
+        if(!button[6]){ //when down button is pressed
+            
+          state.d = state.SAVE_A;
+          }
+        
+        
+        
+        }
+    
+    //////////////////////////p1 map LEDs ///////////////////////////////
+    if (p1map.q[0] == 1) {
+    grid_led[0] = 8b1;
+    }
+    if (p1map.q[1] == 1) {
+    grid_led[1] = 8b1;
+    }
+    if (p1map.q[2] == 1) {
+    grid_led[2] = 8b1;
+    }
+    if (p1map.q[3] == 1) {
+    grid_led[3] = 8b1;
+    }
+    if (p1map.q[4] == 1) {
+    grid_led[4] = 8b1;
+    }
+    if (p1map.q[5] == 1) {
+    grid_led[5] = 8b1;
+    }
+    if (p1map.q[6] == 1) {
+    grid_led[6] = 8b1;
+    }
+    if (p1map.q[7] == 1) {
+    grid_led[7] = 8b1;
+    }
+    if (p1map.q[8] == 1) {
+    grid_led[8] = 8b1;
+    }
+    if (p1map.q[9] == 1) {
+    grid_led[9] = 8b1;
+    }
+    if (p1map.q[10] == 1) {
+    grid_led[10] = 8b1;
+    }
+    if (p1map.q[11] == 1) {
+    grid_led[11] = 8b1;
+    }
+    if (p1map.q[12] == 1) {
+    grid_led[12] = 8b1;
+    }
+    if (p1map.q[13] == 1) {
+    grid_led[13] = 8b1;
+    }
+    if (p1map.q[14] == 1) {
+    grid_led[14] = 8b1;
+    }
+    if (p1map.q[15] == 1) {
+    grid_led[15] = 8b1;
+    }
+    if (p1map.q[16] == 1) {
+    grid_led[16] = 8b1;
+    }
+    if (p1map.q[17] == 1) {
+    grid_led[17] = 8b1;
+    }
+    if (p1map.q[18] == 1) {
+    grid_led[18] = 8b1;
+    }
+    if (p1map.q[19] == 1) {
+    grid_led[19] = 8b1;
+    }
+    if (p1map.q[20] == 1) {
+    grid_led[20] = 8b1;
+    }
+    if (p1map.q[21] == 1) {
+    grid_led[21] = 8b1;
+    }
+    if (p1map.q[22] == 1) {
+    grid_led[22] = 8b1;
+    }
+    if (p1map.q[23] == 1) {
+    grid_led[23] = 8b1;
+    }
+    if (p1map.q[24] == 1) {
+    grid_led[24] = 8b1;
+    }
+    
+    
+    //////////////////////////p2 map LEDs ///////////////////////////////
+    if (p2map.q[0] == 1) {
+    grid_led[0] = 8b1;
+    }
+    if (p2map.q[1] == 1) {
+    grid_led[1] = 8b1;
+    }
+    if (p2map.q[2] == 1) {
+    grid_led[2] = 8b1;
+    }
+    if (p2map.q[3] == 1) {
+    grid_led[3] = 8b1;
+    }
+    if (p2map.q[4] == 1) {
+    grid_led[4] = 8b1;
+    }
+    if (p2map.q[5] == 1) {
+    grid_led[5] = 8b1;
+    }
+    if (p2map.q[6] == 1) {
+    grid_led[6] = 8b1;
+    }
+    if (p2map.q[7] == 1) {
+    grid_led[7] = 8b1;
+    }
+    if (p2map.q[8] == 1) {
+    grid_led[8] = 8b1;
+    }
+    if (p2map.q[9] == 1) {
+    grid_led[9] = 8b1;
+    }
+    if (p2map.q[10] == 1) {
+    grid_led[10] = 8b1;
+    }
+    if (p2map.q[11] == 1) {
+    grid_led[11] = 8b1;
+    }
+    if (p2map.q[12] == 1) {
+    grid_led[12] = 8b1;
+    }
+    if (p2map.q[13] == 1) {
+    grid_led[13] = 8b1;
+    }
+    if (p2map.q[14] == 1) {
+    grid_led[14] = 8b1;
+    }
+    if (p2map.q[15] == 1) {
+    grid_led[15] = 8b1;
+    }
+    if (p2map.q[16] == 1) {
+    grid_led[16] = 8b1;
+    }
+    if (p2map.q[17] == 1) {
+    grid_led[17] = 8b1;
+    }
+    if (p2map.q[18] == 1) {
+    grid_led[18] = 8b1;
+    }
+    if (p2map.q[19] == 1) {
+    grid_led[19] = 8b1;
+    }
+    if (p2map.q[20] == 1) {
+    grid_led[20] = 8b1;
+    }
+    if (p2map.q[21] == 1) {
+    grid_led[21] = 8b1;
+    }
+    if (p2map.q[22] == 1) {
+    grid_led[22] = 8b1;
+    }
+    if (p2map.q[23] == 1) {
+    grid_led[23] = 8b1;
+    }
+    if (p2map.q[24] == 1) {
+    grid_led[24] = 8b1;
+    }
+    
+    
+  }
+}

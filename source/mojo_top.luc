@@ -1,0 +1,222 @@
+module mojo_top (
+    input clk,              // 50MHz clock
+    input rst_n,            // reset button (active low)
+    
+    input cclk,             // configuration clock, AVR ready when high
+    output spi_miso,        // AVR SPI MISO
+    input spi_ss,           // AVR SPI Slave Select
+    input spi_mosi,         // AVR SPI MOSI
+    input spi_sck,          // AVR SPI Clock
+    output spi_channel [4], // AVR general purpose pins (used by default to select ADC channel)
+    input avr_tx,           // AVR TX (FPGA RX)
+    output avr_rx,          // AVR RX (FPGA TX)
+    input avr_rx_busy,      // AVR RX buffer full
+    input io_button[5],
+    input button[8],
+    input start_button,
+    input reset_button,
+    input level_two_button,
+    //input check_grid[25],
+    output grid_led[25],
+    output z_led[25]
+//    output sevens1[8],
+//    output sevens2[8],
+//    output sevensel[2]
+//    output winlight,
+//    output loselight    
+  ) {
+  
+  sig rst;                  // reset signal
+  
+  .clk(clk) {
+    reset_conditioner reset_cond;
+    
+    edge_detector edge_detector (#RISE(1), #FALL(0));
+    button_conditioner bcstart2;
+    button_conditioner bcstart;
+    button_conditioner bc1up;
+    button_conditioner bc1down;
+    button_conditioner bc1left;
+    button_conditioner bc1right;
+    button_conditioner bc2up;
+    button_conditioner bc2down;
+    button_conditioner bc2left;
+    button_conditioner bc2right;
+    button_conditioner bcreset;
+    
+    
+    edge_detector edstart2 (#FALL(0));
+    edge_detector edstart (#FALL(0));
+    edge_detector ed1up (#FALL(0));
+    edge_detector ed1down (#FALL(0));
+    edge_detector ed1left (#FALL(0));
+    edge_detector ed1right (#FALL(0));
+    edge_detector ed2up (#FALL(0));
+    edge_detector ed2down (#FALL(0));
+    edge_detector ed2left (#FALL(0));
+    edge_detector ed2right (#FALL(0));
+    edge_detector edreset(#FALL(0));
+    
+    fsm state = {DEFAULT, GO, SURVIVED,DEAD};
+    playermovement playermovement;
+    zombmovement zombmovement;
+    zomb2movement zomb2movement;
+   
+   
+   .rst(rst) {
+    counter countr(#SIZE(1), #DIV(24));
+//    multi_dec_ctr dec_ctr;
+//    multi_seven_seg seg;
+//    dff tens[8];
+    }
+  }
+  
+
+  always {
+    reset_cond.in = ~rst_n; // input raw inverted reset signal
+    rst = reset_cond.out;   // conditioned reset    
+    spi_miso = bz;          // not using SPI
+    spi_channel = bzzzz;    // not using flags
+    avr_rx = bz;            // not using serial port
+    grid_led[24:0] = 8h00;
+    
+    
+   ////// BUTTONS //////
+    
+    bcstart.in = start_button;
+    edstart.in = bcstart.out;
+    playermovement.start_button = edstart.out;
+    zombmovement.start_button = edstart.out;
+    
+    bcreset.in = reset_button;
+    edreset.in = bcreset.out;
+    playermovement.reset_button = edreset.out;
+    zombmovement.reset_btn = edreset.out;
+    zomb2movement.reset_btn = edreset.out;
+    
+    
+    bcstart2.in = level_two_button;
+    edstart2.in = bcstart2.out;
+    playermovement.level_two_button = edstart2.out;
+    zomb2movement.level_two_button = edstart2.out;
+    zombmovement.level_two_button= edstart2.out;
+    
+    bc1up.in = button[0];
+    ed1up.in = bc1up.out;
+    playermovement.button[0] = ed1up.out;
+    zombmovement.button[0] = ed1up.out;
+    
+    bc1left.in = button[1];
+    ed1left.in = bc1left.out;
+    playermovement.button[1] = ed1left.out;
+    zombmovement.button[1] = ed1left.out;
+    
+    bc1right.in = button[2];
+    ed1right.in = bc1right.out;
+    playermovement.button[2] = ed1right.out;
+    zombmovement.button[2] = ed1right.out;
+    
+    bc1down.in = button[3];
+    ed1down.in = bc1down.out;
+    playermovement.button[3] = ed1down.out;
+    zombmovement.button[3] = ed1down.out;
+    
+    bc2up.in = button[4];
+    ed2up.in = bc2up.out;
+    playermovement.button[4] = ed2up.out;
+    zombmovement.button[4] = ed2up.out;
+    
+    bc2left.in = button[5];
+    ed2left.in = bc2left.out;
+    playermovement.button[5] = ed2left.out;
+    zombmovement.button[5] = ed2left.out;
+    
+    bc2right.in = button[6];
+    ed2right.in = bc2right.out;
+    playermovement.button[6] = ed2right.out;
+    zombmovement.button[6] = ed2right.out;
+    
+    bc2down.in = button[7];
+    ed2down.in = bc2down.out;
+    playermovement.button[7] = ed2down.out;
+    zombmovement.button[7] = ed2down.out;
+    
+    
+    /////////////////////
+    playermovement.z_led[24:0]=zombmovement.z_led;
+    grid_led[24:0] = playermovement.grid_led[24:0];
+    
+    zombmovement.grid_led[24:0]=playermovement.grid_led[24:0];
+    zombmovement.rst = rst;
+    z_led[24:0] = zombmovement.z_led[24:0];
+    zombmovement.signal = 0;
+
+    ////////////////////
+    
+    zomb2movement.grid_led[24:0]=playermovement.grid_led[24:0];
+    zomb2movement.rst = rst;
+    zomb2movement.signal = 0;
+    zomb2movement.button = button;
+    zomb2movement.reset_btn = reset_button;
+    ////////////////////
+    edge_detector.in = 0;
+    
+//    seg.values[0] =4b0;
+//    seg.values[1] =4b0;
+
+    
+   
+//    dec_ctr.inc = 0;
+//    sevens1 = 8b11111111;
+//    sevens2 = 8b11111111;
+//    sevensel[0] = 0;
+//    sevensel[1] = 0;
+    
+//    winlight = 0;
+//    loselight = 0;
+//    ones.d = 8b00000000;
+//    tens.d = 8b00000000;
+    
+//    winlight = 0;
+//    loselight = 0;
+    
+    zombmovement.reset_btn = reset_button;
+    
+    case(state.q){
+    state.DEFAULT:
+    if(start_button){
+        
+        state.d= state.GO;
+        }
+    if(level_two_button){
+        
+        state.d= state.GO;
+        }
+    
+    state.GO:
+    edge_detector.in = countr.value;
+    zombmovement.signal = edge_detector.out;
+    zomb2movement.signal = edge_detector.out;
+//    dec_ctr.inc = edge_detector.out;
+//    seg.values[0] = dec_ctr.digits[0];
+//    seg.values[1] = dec_ctr.digits[1];
+//    sevens1 = seg.seg;
+//    sevens2 = seg.seg;
+//    sevensel = ~seg.sel;
+    
+//    if (~seg.sel == 2b01){
+//        tens.d = seg.seg;}
+    
+//    state.DEAD:
+//    dec_ctr.inc = 0;  
+//    loselight = 1;
+
+        
+//    state.SURVIVED:
+    //dec_ctr.inc = 0;
+   // sevens1 = ones.q;
+  //  sevens2 = tens.q;
+//    winlight = 1;         
+  }
+ }
+}

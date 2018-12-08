@@ -1,0 +1,28 @@
+module add (
+    input a[32],
+    input b[32],
+    input alufn[6],
+    output out[32]
+  ) {
+
+  always {
+    case (alufn[1-:2]){
+      // addition
+      2b00:
+        out = a+b;
+      // subtraction
+      2b01:
+        out = a-b;
+      // multiplication
+      2b10:
+        out = a*b;
+      //signed addition
+      2b11:
+        out = $signed(a)+$signed(b);
+      // default
+      default:
+        out = 32b0;
+      }
+  }
+  
+}

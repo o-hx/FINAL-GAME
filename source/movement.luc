@@ -1,0 +1,21 @@
+module movement (
+    input clk,  // clock
+    input rst,  // reset
+    input init[25],
+    input init2[25],
+    output p1move[25],
+    output p2move[25]
+  ) {
+  
+  always {
+  
+
+     
+   p1move=init;
+   p2move=init2;
+    
+    
+    
+    
+}
+}

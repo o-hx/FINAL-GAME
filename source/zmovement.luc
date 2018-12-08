@@ -1,0 +1,11 @@
+module zmovement (
+    input clk,  // clock
+    input rst,  // reset
+    input z1init[25],
+    output z1move[25]
+  ) {
+
+  always {
+    z1move = z1init;
+  }
+}
