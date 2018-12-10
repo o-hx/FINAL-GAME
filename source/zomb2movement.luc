@@ -2,6 +2,7 @@ module zomb2movement (
     input clk,  // clock
      input rst, // reset
     input level_two_button,
+    input level_three_button,
     input reset_btn,
     input signal,
     input grid_led[25],
@@ -36,6 +37,10 @@ module zomb2movement (
         //zomb1map.d=25b0000000000000000000000000;
          // state.d=state.START;}
       if(level_two_button){  //ONLY INIT IN LEVEL 2
+        zomb1map.d=25b0000100000000000000000000;
+          state.d=state.START;}
+          
+        if(level_three_button){  // INIT IN LEVEL 3
         zomb1map.d=25b0000100000000000000000000;
           state.d=state.START;}
           

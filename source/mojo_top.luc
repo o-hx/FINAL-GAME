@@ -16,6 +16,7 @@ module mojo_top (
     input start_button,
     input reset_button,
     input level_two_button,
+    input level_three_button,
     //input check_grid[25],
     output grid_led[25],
     output z_led[25]
@@ -32,6 +33,7 @@ module mojo_top (
     reset_conditioner reset_cond;
     
     edge_detector edge_detector (#RISE(1), #FALL(0));
+    button_conditioner bcstart3;
     button_conditioner bcstart2;
     button_conditioner bcstart;
     button_conditioner bc1up;
@@ -45,6 +47,7 @@ module mojo_top (
     button_conditioner bcreset;
     
     
+    edge_detector edstart3 (#FALL(0));
     edge_detector edstart2 (#FALL(0));
     edge_detector edstart (#FALL(0));
     edge_detector ed1up (#FALL(0));
@@ -57,7 +60,7 @@ module mojo_top (
     edge_detector ed2right (#FALL(0));
     edge_detector edreset(#FALL(0));
     
-    fsm state = {DEFAULT, GO, SURVIVED,DEAD};
+    fsm state = {DEFAULT, GO,FASTER, SURVIVED,DEAD};
     playermovement playermovement;
     zombmovement zombmovement;
     zomb2movement zomb2movement;
@@ -65,9 +68,10 @@ module mojo_top (
    
    .rst(rst) {
     counter countr(#SIZE(1), #DIV(24));
+//      counter countr2(#SIZE(1), #DIV(22));
 //    multi_dec_ctr dec_ctr;
 //    multi_seven_seg seg;
-//    dff tens[8];
+//    dff countdown[8];
     }
   }
   
@@ -100,6 +104,12 @@ module mojo_top (
     playermovement.level_two_button = edstart2.out;
     zomb2movement.level_two_button = edstart2.out;
     zombmovement.level_two_button= edstart2.out;
+    
+    bcstart3.in = level_three_button;
+    edstart3.in = bcstart3.out;
+    playermovement.level_three_button = edstart3.out;
+    zomb2movement.level_three_button = edstart3.out;
+    zombmovement.level_three_button= edstart3.out;
     
     bc1up.in = button[0];
     ed1up.in = bc1up.out;
@@ -160,7 +170,6 @@ module mojo_top (
     zomb2movement.reset_btn = reset_button;
     ////////////////////
     edge_detector.in = 0;
-    
 //    seg.values[0] =4b0;
 //    seg.values[1] =4b0;
 
@@ -192,11 +201,25 @@ module mojo_top (
         
         state.d= state.GO;
         }
+        
+        if(level_three_button) {
+        state.d = state.GO;
+        }
     
     state.GO:
     edge_detector.in = countr.value;
     zombmovement.signal = edge_detector.out;
     zomb2movement.signal = edge_detector.out;
+        
+//        if (edge_detector.out){
+//        countdown.d = countdown.q - 1; 
+//          z_led[0] = 1;
+//          if (countdown.q == 8b00){
+//          state.d = state.FASTER;
+//          }
+ //       }
+        
+          
 //    dec_ctr.inc = edge_detector.out;
 //    seg.values[0] = dec_ctr.digits[0];
 //    seg.values[1] = dec_ctr.digits[1];
